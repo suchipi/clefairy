@@ -1,0 +1,43 @@
+{
+  "name": "clefairy",
+  "version": "0.1.0",
+  "description": "Typed CLI argv parser and main function wrapper",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "cli",
+    "argv",
+    "parse",
+    "flag",
+    "optional",
+    "required",
+    "run",
+    "main",
+    "exit",
+    "exitCode",
+    "status",
+    "async",
+    "Promise",
+    "throw",
+    "Error",
+    "reject"
+  ],
+  "author": "Lily Scott <me@suchipi.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^17.0.21",
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suchipi/clefairy.git"
+  },
+  "dependencies": {
+    "change-case": "^4.1.2",
+    "pretty-print-error": "^1.1.0"
+  }
+}
