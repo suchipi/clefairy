@@ -1,4 +1,5 @@
 import * as changeCase from "change-case";
+import { parseArgv } from "clef-parse";
 import { formatError } from "pretty-print-error";
 
 export const requiredString = Symbol("requiredString");
@@ -53,97 +54,37 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
   runOptions: { allowUnknownFlags?: boolean; argv?: Array<string> } = {}
 ) {
   try {
-    const flagToPropertyNameMap: { [key: string]: string } = {};
-    const flagToSymbolMap: { [key: string]: TypeSymbol } = {};
-    const propertyNameToFlagNamesMap: { [key: string]: Array<string> } = {};
+    for (const key of Object.keys(argsObject)) {
+      if (changeCase.camelCase(key) !== key) {
+        throw new Error(
+          `All option keys must be in camelCase. This one wasn't: ${JSON.stringify(
+            key
+          )}`
+        );
+      }
+    }
+
+    const hints = {};
 
     for (const [key, value] of Object.entries(argsObject)) {
-      const flagNames: Array<string> = [];
-      if (key.length === 1) {
-        flagNames.push("-" + key);
-      } else {
-        flagNames.push("--" + changeCase.paramCase(key));
-      }
+      const hintValue = {
+        [requiredString]: String,
+        [requiredNumber]: Number,
+        [requiredBoolean]: Boolean,
+        [optionalString]: String,
+        [optionalNumber]: Number,
+        [optionalBoolean]: Boolean,
+      }[value];
 
-      propertyNameToFlagNamesMap[key] = flagNames;
-
-      for (const flagName of flagNames) {
-        flagToPropertyNameMap[flagName] = key;
-        flagToSymbolMap[flagName] = value;
+      if (hintValue != null) {
+        hints[key] = hintValue;
       }
     }
 
-    const options: any = {};
-    const positionalArgs: Array<any> = [];
-
-    const argv = runOptions.argv || process.argv.slice(2);
-    const argvCopy = argv.slice();
-    let unknownAllowed = runOptions.allowUnknownFlags || false;
-
-    while (argvCopy.length > 0) {
-      let item = argvCopy.shift();
-      if (item == null) continue;
-      if (typeof item !== "string") {
-        item = String(item);
-      }
-
-      if (item === "--") {
-        unknownAllowed = true;
-        continue;
-      }
-
-      const argType = flagToSymbolMap[item];
-      if (!argType) {
-        if (item.startsWith("-") && !unknownAllowed) {
-          const err = new Error("Unknown command-line option: " + item);
-          Object.assign(err, {
-            validOptions: Object.keys(flagToPropertyNameMap),
-          });
-          throw err;
-        } else {
-          positionalArgs.push(item);
-          continue;
-        }
-      }
-
-      let value: any;
-      switch (argType) {
-        case requiredBoolean:
-        case optionalBoolean: {
-          if (argvCopy[0] === "false") {
-            argvCopy.shift();
-            value = false;
-          } else {
-            value = true;
-          }
-          break;
-        }
-        case requiredString:
-        case optionalString: {
-          value = argvCopy.shift();
-          if (value == null) {
-            throw new Error(
-              `Expected value after command-line option '${item}'`
-            );
-          }
-          break;
-        }
-        case requiredNumber:
-        case optionalNumber: {
-          value = argvCopy.shift();
-          if (value == null) {
-            throw new Error(
-              `Expected value after command-line option '${item}'`
-            );
-          }
-          value = Number(value);
-          break;
-        }
-      }
-
-      const key = flagToPropertyNameMap[item];
-      options[key] = value;
-    }
+    const { options, positionalArgs } = parseArgv(
+      runOptions.argv || process.argv.slice(2),
+      hints
+    );
 
     const requiredOptionNames = Object.entries(argsObject)
       .filter(([_key, value]) => requiredSymbols.has(value))
@@ -151,14 +92,11 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
 
     for (const key of requiredOptionNames) {
       if (options[key] == null) {
-        const flagNames = propertyNameToFlagNamesMap[key];
-        const err = new Error(
-          `'${key}' is required, but it wasn't specified. Please specify it using ${flagNames
-            .slice(0, -1)
-            .join(", ")}, or ${flagNames[flagNames.length - 1]}.`
+        throw new Error(
+          `'${key}' is required, but it wasn't specified. Please specify it using ${
+            key.length === 1 ? "-" + key : "--" + changeCase.paramCase(key)
+          }.`
         );
-        Object.assign(err, { flagNames });
-        throw err;
       }
     }
 

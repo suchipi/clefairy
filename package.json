@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "change-case": "^4.1.2",
+    "clef-parse": "^0.1.1",
     "pretty-print-error": "^1.1.0"
   }
 }
