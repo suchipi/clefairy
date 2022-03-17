@@ -1,6 +1,32 @@
+import util from "util";
 import * as changeCase from "change-case";
 import { parseArgv } from "clef-parse";
-import { formatError } from "pretty-print-error";
+import * as prettyPrintError from "pretty-print-error";
+import { codePreviewFromError } from "code-preview-from-error";
+import * as pheno from "pheno";
+
+function formatError(error: unknown): string {
+  if (!pheno.isOfType(error, pheno.Error_)) {
+    return formatError(
+      new Error(
+        `Non-error value was thrown: ${util.inspect(error, { colors: true })}`
+      )
+    );
+  }
+
+  const formattedErrorString = prettyPrintError.formatError(error, {
+    color: true,
+  });
+  const codeFrame = codePreviewFromError(error);
+
+  if (codeFrame != null) {
+    const [line1, ...otherLines] = formattedErrorString.split("\n");
+
+    return [line1, "", codeFrame, "", ...otherLines].join("\n");
+  } else {
+    return formattedErrorString;
+  }
+}
 
 export const requiredString = Symbol("requiredString");
 export const requiredNumber = Symbol("requiredNumber");
