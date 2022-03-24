@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "change-case": "^4.1.2",
-    "clef-parse": "^0.1.2",
+    "clef-parse": "^0.2.0",
     "code-preview-from-error": "^1.0.2",
     "pheno": "^0.4.0",
     "pretty-print-error": "^1.1.1"

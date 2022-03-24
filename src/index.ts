@@ -1,6 +1,6 @@
 import util from "util";
 import * as changeCase from "change-case";
-import { parseArgv } from "clef-parse";
+import { parseArgv, Path } from "clef-parse";
 import * as prettyPrintError from "pretty-print-error";
 import { codePreviewFromError } from "code-preview-from-error";
 import * as pheno from "pheno";
@@ -31,24 +31,29 @@ function formatError(error: unknown): string {
 export const requiredString = Symbol("requiredString");
 export const requiredNumber = Symbol("requiredNumber");
 export const requiredBoolean = Symbol("requiredBoolean");
+export const requiredPath = Symbol("requiredPath");
 
 const requiredSymbols = new Set([
   requiredString,
   requiredNumber,
   requiredBoolean,
+  requiredPath,
 ]);
 
 export const optionalString = Symbol("optionalString");
 export const optionalNumber = Symbol("optionalNumber");
 export const optionalBoolean = Symbol("optionalBoolean");
+export const optionalPath = Symbol("optionalPath");
 
 export type TypeSymbol =
   | typeof requiredString
   | typeof requiredNumber
   | typeof requiredBoolean
+  | typeof requiredPath
   | typeof optionalString
   | typeof optionalNumber
-  | typeof optionalBoolean;
+  | typeof optionalBoolean
+  | typeof optionalPath;
 
 export type TypeSymbolToType<Input extends TypeSymbol> =
   Input extends typeof requiredString
@@ -57,12 +62,16 @@ export type TypeSymbolToType<Input extends TypeSymbol> =
     ? number
     : Input extends typeof requiredBoolean
     ? boolean
+    : Input extends typeof requiredPath
+    ? string
     : Input extends typeof optionalString
     ? string | undefined
     : Input extends typeof optionalNumber
     ? number | undefined
     : Input extends typeof optionalBoolean
     ? boolean | undefined
+    : Input extends typeof optionalPath
+    ? string | undefined
     : never;
 
 export type ArgsObjectToOptions<Input extends { [key: string]: TypeSymbol }> = {
@@ -77,7 +86,7 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
     },
     ...args: Array<string>
   ) => any,
-  runOptions: { allowUnknownFlags?: boolean; argv?: Array<string> } = {}
+  runOptions: { argv?: Array<string> } = {}
 ) {
   try {
     for (const key of Object.keys(argsObject)) {
@@ -97,9 +106,11 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
         [requiredString]: String,
         [requiredNumber]: Number,
         [requiredBoolean]: Boolean,
+        [requiredPath]: Path,
         [optionalString]: String,
         [optionalNumber]: Number,
         [optionalBoolean]: Boolean,
+        [optionalPath]: Path,
       }[value];
 
       if (hintValue != null) {
