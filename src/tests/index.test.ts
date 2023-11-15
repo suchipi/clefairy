@@ -142,3 +142,61 @@ test("returns rejected promise", async () => {
     }
   `);
 });
+
+test("supports several different cli flag forms", async () => {
+  const data = new DataBag();
+
+  const result = await doRun(
+    {
+      a: optionalString,
+      aye: optionalString,
+      bee: optionalString,
+      ayeBee: optionalString,
+      ayeBeeCee: optionalString,
+      ayeBeeCeeDee: optionalString,
+      almostThere: optionalNumber,
+      theLastOne: optionalBoolean,
+    },
+    (options, ...args) => {
+      data.set({ options, args });
+    },
+    [
+      "-a",
+      "letter",
+      "--aye",
+      "hoi",
+      "-bee",
+      "buzz",
+      "--ayeBee",
+      "buzzy pirate",
+      "--aye-bee-cee",
+      "alphabet",
+      "--aye-bee-cee-dee=singing",
+      "--the_last_one",
+      "--ALMOST_THERE=3",
+    ],
+  );
+
+  expect(clean({ result, data })).toMatchInlineSnapshot(`
+    {
+      "data": DataBag {
+        "args": [],
+        "options": {
+          "a": "letter",
+          "almostThere": 3,
+          "aye": "hoi",
+          "ayeBeeCee": "alphabet",
+          "ayeBeeCeeDee": "singing",
+          "ayebee": "buzzy pirate",
+          "bee": "buzz",
+          "theLastOne": true,
+        },
+      },
+      "result": {
+        "error": null,
+        "exitCode": 0,
+        "printedErrors": [],
+      },
+    }
+  `);
+});
