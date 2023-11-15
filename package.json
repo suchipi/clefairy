@@ -26,7 +26,7 @@
     "Error",
     "reject"
   ],
-  "author": "Lily Scott <me@suchipi.com>",
+  "author": "Lily Skye <me@suchipi.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.9.0",
@@ -38,7 +38,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/suchipi/clefairy.git"
+    "url": "git+https://github.com/suchipi/clefairy.git"
   },
   "dependencies": {
     "@suchipi/defer": "^1.0.0",
