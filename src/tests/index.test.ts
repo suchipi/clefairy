@@ -223,13 +223,13 @@ test("errors when args object has non-camelcase name", async () => {
         "printedErrors": [
           "Error: All option keys must be in camelCase. This one wasn't: \\"SOME_THING\\"
 
-    ./src/check-options.ts:12:13                                                   
-    10   |   for (const key of Object.keys(schema)) {
-    11   |     if (changeCase.camelCase(key) !== key) {
-    12 > |       throw new Error(
-    13   |         \`All option keys must be in camelCase. This one wasn't: \${JSO...
-    14   |           key,
-    15   |         )}\`,
+    ./src/check-options.ts:17:13                                                   
+    15   |   for (const key of Object.keys(schema)) {
+    16   |     if (changeCase.camelCase(key) !== key) {
+    17 > |       throw new Error(
+    18   |         \`All option keys must be in camelCase. This one wasn't: \${JSO...
+    19   |           key,
+    20   |         )}\`,
       at [stacktrace redacted]",
         ],
       },
@@ -259,13 +259,47 @@ test("errors when required arg isn't present", async () => {
         "printedErrors": [
           "Error: 'something' is required, but it wasn't specified. Please specify it using --something.
 
-    ./src/check-options.ts:26:13                                                    
-    24   |   for (const key of requiredOptionNames) {
-    25   |     if (options[key] == null) {
-    26 > |       throw new Error(
-    27   |         \`'\${key}' is required, but it wasn't specified. Please specif...
-    28   |           key.length === 1 ? \\"-\\" + key : \\"--\\" + changeCase.paramCase(key)
-    29   |         }.\`,
+    ./src/check-options.ts:29:13                                                    
+    28   |     if (requiredSymbols.has(symbol) && value == null) {
+    29 > |       throw new Error(
+    30   |         \`'\${key}' is required, but it wasn't specified. Please specif...
+    31   |           key.length === 1 ? \\"-\\" + key : \\"--\\" + changeCase.paramCase(key)
+    32   |         }.\`,
+      at [stacktrace redacted]",
+        ],
+      },
+    }
+  `);
+});
+
+test("errors when optional arg is wrong type", async () => {
+  const data = new DataBag();
+
+  const result = await doRun(
+    {
+      something: optionalNumber,
+    },
+    (options, ...args) => {
+      data.set({ options, args });
+    },
+    ["--something", "potato"],
+  );
+
+  expect(clean({ result, data })).toMatchInlineSnapshot(`
+    {
+      "data": DataBag {},
+      "result": {
+        "error": [Error: 'something' has the wrong type: should have been 'optionalNumber', but got: NaN],
+        "exitCode": 1,
+        "printedErrors": [
+          "Error: 'something' has the wrong type: should have been 'optionalNumber', but got: NaN
+
+    ./src/check-options.ts:37:13                                                   
+    36   |     if (!valueMatchesSymbolType(value, symbol)) {
+    37 > |       throw new Error(
+    38   |         \`'\${key}' has the wrong type: should have been '\${symbol.desc...
+    39   |       );
+    40   |     }
       at [stacktrace redacted]",
         ],
       },

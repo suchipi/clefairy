@@ -43,3 +43,30 @@ export type TypeSymbolToType<Input extends TypeSymbol> =
                 : Input extends typeof optionalPath
                   ? string | undefined
                   : never;
+
+export function valueMatchesSymbolType(value: any, symbol: TypeSymbol) {
+  switch (symbol) {
+    case requiredPath:
+    case requiredString: {
+      return typeof value === "string";
+    }
+    case optionalPath:
+    case optionalString: {
+      return typeof value === "string" || value == null;
+    }
+    case requiredNumber: {
+      return typeof value === "number" && !Number.isNaN(value);
+    }
+    case optionalNumber: {
+      return (
+        (typeof value === "number" && !Number.isNaN(value)) || value == null
+      );
+    }
+    case requiredBoolean: {
+      return typeof value === "boolean";
+    }
+    case optionalBoolean: {
+      return typeof value === "boolean" || value == null;
+    }
+  }
+}

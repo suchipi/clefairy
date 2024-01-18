@@ -14,6 +14,7 @@ import {
 } from "./symbols";
 import Defer from "@suchipi/defer";
 import { checkOptions } from "./check-options";
+import { getHints } from "./get-hints";
 
 export type ArgsObjectToOptions<Input extends { [key: string]: TypeSymbol }> = {
   [key in keyof Input]: TypeSymbolToType<Input[key]>;
@@ -39,24 +40,7 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
   const ret = new Defer<void>();
 
   try {
-    const hints = {};
-
-    for (const [key, value] of Object.entries(argsObject)) {
-      const hintValue = {
-        [requiredString]: String,
-        [requiredNumber]: Number,
-        [requiredBoolean]: Boolean,
-        [requiredPath]: Path,
-        [optionalString]: String,
-        [optionalNumber]: Number,
-        [optionalBoolean]: Boolean,
-        [optionalPath]: Path,
-      }[value];
-
-      if (hintValue != null) {
-        hints[key] = hintValue;
-      }
-    }
+    const hints = getHints(argsObject);
 
     const { options, positionalArgs } = parseArgv(
       runOptions.argv || process.argv.slice(2),

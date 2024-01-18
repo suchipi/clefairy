@@ -1,5 +1,10 @@
 import * as changeCase from "change-case";
-import { TypeSymbol, TypeSymbolToType, requiredSymbols } from "./symbols";
+import {
+  TypeSymbol,
+  TypeSymbolToType,
+  requiredSymbols,
+  valueMatchesSymbolType,
+} from "./symbols";
 
 export function checkOptions<ArgsObject extends { [key: string]: TypeSymbol }>(
   schema: ArgsObject,
@@ -17,16 +22,20 @@ export function checkOptions<ArgsObject extends { [key: string]: TypeSymbol }>(
     }
   }
 
-  const requiredOptionNames = Object.entries(schema)
-    .filter(([_key, value]) => requiredSymbols.has(value))
-    .map(([key]) => key);
+  for (const [key, symbol] of Object.entries(schema)) {
+    const value = options[key];
 
-  for (const key of requiredOptionNames) {
-    if (options[key] == null) {
+    if (requiredSymbols.has(symbol) && value == null) {
       throw new Error(
         `'${key}' is required, but it wasn't specified. Please specify it using ${
           key.length === 1 ? "-" + key : "--" + changeCase.paramCase(key)
         }.`,
+      );
+    }
+
+    if (!valueMatchesSymbolType(value, symbol)) {
+      throw new Error(
+        `'${key}' has the wrong type: should have been '${symbol.description}', but got: ${value}`,
       );
     }
   }
