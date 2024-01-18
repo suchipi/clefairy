@@ -200,3 +200,75 @@ test("supports several different cli flag forms", async () => {
     }
   `);
 });
+
+test("errors when args object has non-camelcase name", async () => {
+  const data = new DataBag();
+
+  const result = await doRun(
+    {
+      SOME_THING: optionalNumber,
+    },
+    (options, ...args) => {
+      data.set({ options, args });
+    },
+    [],
+  );
+
+  expect(clean({ result, data })).toMatchInlineSnapshot(`
+    {
+      "data": DataBag {},
+      "result": {
+        "error": [Error: All option keys must be in camelCase. This one wasn't: "SOME_THING"],
+        "exitCode": 1,
+        "printedErrors": [
+          "Error: All option keys must be in camelCase. This one wasn't: \\"SOME_THING\\"
+
+    ./src/check-options.ts:12:13                                                   
+    10   |   for (const key of Object.keys(schema)) {
+    11   |     if (changeCase.camelCase(key) !== key) {
+    12 > |       throw new Error(
+    13   |         \`All option keys must be in camelCase. This one wasn't: \${JSO...
+    14   |           key,
+    15   |         )}\`,
+      at [stacktrace redacted]",
+        ],
+      },
+    }
+  `);
+});
+
+test("errors when required arg isn't present", async () => {
+  const data = new DataBag();
+
+  const result = await doRun(
+    {
+      something: requiredNumber,
+    },
+    (options, ...args) => {
+      data.set({ options, args });
+    },
+    [],
+  );
+
+  expect(clean({ result, data })).toMatchInlineSnapshot(`
+    {
+      "data": DataBag {},
+      "result": {
+        "error": [Error: 'something' is required, but it wasn't specified. Please specify it using --something.],
+        "exitCode": 1,
+        "printedErrors": [
+          "Error: 'something' is required, but it wasn't specified. Please specify it using --something.
+
+    ./src/check-options.ts:26:13                                                    
+    24   |   for (const key of requiredOptionNames) {
+    25   |     if (options[key] == null) {
+    26 > |       throw new Error(
+    27   |         \`'\${key}' is required, but it wasn't specified. Please specif...
+    28   |           key.length === 1 ? \\"-\\" + key : \\"--\\" + changeCase.paramCase(key)
+    29   |         }.\`,
+      at [stacktrace redacted]",
+        ],
+      },
+    }
+  `);
+});

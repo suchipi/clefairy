@@ -11,3 +11,4 @@ export {
   requiredString,
 } from "./symbols";
 export { run, ArgsObjectToOptions } from "./run";
+export { checkOptions } from "./check-options";

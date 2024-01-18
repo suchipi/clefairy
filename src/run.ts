@@ -1,4 +1,3 @@
-import * as changeCase from "change-case";
 import { parseArgv, Path } from "clef-parse";
 import { formatError } from "./format-error";
 import {
@@ -12,9 +11,9 @@ import {
   requiredNumber,
   requiredPath,
   requiredString,
-  requiredSymbols,
 } from "./symbols";
 import Defer from "@suchipi/defer";
+import { checkOptions } from "./check-options";
 
 export type ArgsObjectToOptions<Input extends { [key: string]: TypeSymbol }> = {
   [key in keyof Input]: TypeSymbolToType<Input[key]>;
@@ -40,16 +39,6 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
   const ret = new Defer<void>();
 
   try {
-    for (const key of Object.keys(argsObject)) {
-      if (changeCase.camelCase(key) !== key) {
-        throw new Error(
-          `All option keys must be in camelCase. This one wasn't: ${JSON.stringify(
-            key,
-          )}`,
-        );
-      }
-    }
-
     const hints = {};
 
     for (const [key, value] of Object.entries(argsObject)) {
@@ -74,19 +63,7 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
       hints,
     );
 
-    const requiredOptionNames = Object.entries(argsObject)
-      .filter(([_key, value]) => requiredSymbols.has(value))
-      .map(([key]) => key);
-
-    for (const key of requiredOptionNames) {
-      if (options[key] == null) {
-        throw new Error(
-          `'${key}' is required, but it wasn't specified. Please specify it using ${
-            key.length === 1 ? "-" + key : "--" + changeCase.paramCase(key)
-          }.`,
-        );
-      }
-    }
+    checkOptions(argsObject, options);
 
     const result = mainFunction(options as any, ...positionalArgs);
     if (
