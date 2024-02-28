@@ -1,18 +1,6 @@
-import { parseArgv, Path } from "clef-parse";
-import { formatError } from "./format-error";
-import {
-  TypeSymbol,
-  TypeSymbolToType,
-  optionalBoolean,
-  optionalNumber,
-  optionalPath,
-  optionalString,
-  requiredBoolean,
-  requiredNumber,
-  requiredPath,
-  requiredString,
-} from "./symbols";
-import Defer from "@suchipi/defer";
+import { parseArgv } from "clef-parse";
+import { runMain } from "@suchipi/run-main";
+import { TypeSymbol, TypeSymbolToType } from "./symbols";
 import { checkOptions } from "./check-options";
 import { getHints } from "./get-hints";
 
@@ -33,46 +21,26 @@ export function run<ArgsObject extends { [key: string]: TypeSymbol }>(
     printError?: (formattedError: string) => void;
     exit?: (code?: number) => void;
   } = {},
-) {
+): Promise<void> {
   const exit = runOptions.exit ?? process.exit.bind(process);
   const printError = runOptions.printError ?? console.error;
 
-  const ret = new Defer<void>();
+  return runMain(
+    () => {
+      const hints = getHints(argsObject);
 
-  try {
-    const hints = getHints(argsObject);
-
-    const { options, positionalArgs } = parseArgv(
-      runOptions.argv || process.argv.slice(2),
-      hints,
-    );
-
-    checkOptions(argsObject, options);
-
-    const result = mainFunction(options as any, ...positionalArgs);
-    if (
-      typeof result === "object" &&
-      result != null &&
-      typeof result.then === "function"
-    ) {
-      result.then(
-        () => {
-          ret.resolve();
-        },
-        (err) => {
-          printError(formatError(err));
-          ret.reject(err);
-          exit(1);
-        },
+      const { options, positionalArgs } = parseArgv(
+        runOptions.argv || process.argv.slice(2),
+        hints,
       );
-    } else {
-      ret.resolve();
-    }
-  } catch (err) {
-    printError(formatError(err));
-    ret.reject(err);
-    exit(1);
-  }
 
-  return ret.promise;
+      checkOptions(argsObject, options);
+
+      return mainFunction(options as any, ...positionalArgs);
+    },
+    {
+      exit,
+      printError,
+    },
+  );
 }

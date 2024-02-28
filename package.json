@@ -41,11 +41,8 @@
     "url": "git+https://github.com/suchipi/clefairy.git"
   },
   "dependencies": {
-    "@suchipi/defer": "^1.0.0",
+    "@suchipi/run-main": "^1.0.0",
     "change-case": "^4.1.2",
-    "clef-parse": "^0.5.0",
-    "code-preview-from-error": "^1.0.2",
-    "pheno": "^0.11.0",
-    "pretty-print-error": "^1.1.1"
+    "clef-parse": "^0.5.0"
   }
 }
