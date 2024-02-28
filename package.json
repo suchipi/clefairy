@@ -1,6 +1,6 @@
 {
   "name": "clefairy",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Typed CLI argv parser and main function wrapper",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
