@@ -29,7 +29,13 @@ test("basic success", async () => {
           "another-file.png",
         ],
         "options": {
-          "inputPath": "<rootDir>/myfile.txt",
+          "inputPath": Path {
+            "segments": [
+              "<rootDir>",
+              "myfile.txt",
+            ],
+            "separator": "/",
+          },
         },
       },
       "result": {
@@ -61,13 +67,13 @@ test("sync error throw", async () => {
         "printedErrors": [
           "Error: bad!!!
 
-    ./src/tests/index.test.ts:50:13        
-    48   |     {},
-    49   |     (options, ...args) => {
-    50 > |       throw new Error(\\"bad!!!\\");
-    51   |     },
-    52   |     [\\"stuff\\", \\"yeah stuff\\"],
-    53   |   );
+    ./src/tests/index.test.ts:56:13        
+    54   |     {},
+    55   |     (options, ...args) => {
+    56 > |       throw new Error(\\"bad!!!\\");
+    57   |     },
+    58   |     [\\"stuff\\", \\"yeah stuff\\"],
+    59   |   );
       at [stacktrace redacted]",
         ],
       },
@@ -95,13 +101,13 @@ test("async error throw", async () => {
         "printedErrors": [
           "Error: bad again!!!
 
-    ./src/tests/index.test.ts:84:13              
-    82   |     {},
-    83   |     async (options, ...args) => {
-    84 > |       throw new Error(\\"bad again!!!\\");
-    85   |     },
-    86   |     [\\"stuff\\", \\"yeah stuff\\"],
-    87   |   );
+    ./src/tests/index.test.ts:90:13              
+    88   |     {},
+    89   |     async (options, ...args) => {
+    90 > |       throw new Error(\\"bad again!!!\\");
+    91   |     },
+    92   |     [\\"stuff\\", \\"yeah stuff\\"],
+    93   |   );
       at [stacktrace redacted]",
         ],
       },
@@ -129,13 +135,13 @@ test("returns rejected promise", async () => {
         "printedErrors": [
           "Error: nahh
 
-    ./src/tests/index.test.ts:118:29                       
-    116   |     {},
-    117   |     (options, ...args) => {
-    118 > |       return Promise.reject(new Error(\\"nahh\\"));
-    119   |     },
-    120   |     [\\"stuff\\", \\"yeah stuff\\"],
-    121   |   );
+    ./src/tests/index.test.ts:124:29                       
+    122   |     {},
+    123   |     (options, ...args) => {
+    124 > |       return Promise.reject(new Error(\\"nahh\\"));
+    125   |     },
+    126   |     [\\"stuff\\", \\"yeah stuff\\"],
+    127   |   );
       at [stacktrace redacted]",
         ],
       },

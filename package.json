@@ -43,6 +43,6 @@
   "dependencies": {
     "@suchipi/run-main": "^1.0.0",
     "change-case": "^4.1.2",
-    "clef-parse": "^0.5.0"
+    "clef-parse": "^0.6.0"
   }
 }

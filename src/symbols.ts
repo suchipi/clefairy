@@ -1,3 +1,5 @@
+import { Path } from "clef-parse";
+
 export const requiredString = Symbol("requiredString");
 export const requiredNumber = Symbol("requiredNumber");
 export const requiredBoolean = Symbol("requiredBoolean");
@@ -33,7 +35,7 @@ export type TypeSymbolToType<Input extends TypeSymbol> =
       : Input extends typeof requiredBoolean
         ? boolean
         : Input extends typeof requiredPath
-          ? string
+          ? Path
           : Input extends typeof optionalString
             ? string | undefined
             : Input extends typeof optionalNumber
@@ -41,16 +43,20 @@ export type TypeSymbolToType<Input extends TypeSymbol> =
               : Input extends typeof optionalBoolean
                 ? boolean | undefined
                 : Input extends typeof optionalPath
-                  ? string | undefined
+                  ? Path | undefined
                   : never;
 
 export function valueMatchesSymbolType(value: any, symbol: TypeSymbol) {
   switch (symbol) {
-    case requiredPath:
+    case requiredPath: {
+      return value instanceof Path;
+    }
     case requiredString: {
       return typeof value === "string";
     }
-    case optionalPath:
+    case optionalPath: {
+      return value instanceof Path || value == null;
+    }
     case optionalString: {
       return typeof value === "string" || value == null;
     }

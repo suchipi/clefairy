@@ -1,6 +1,7 @@
 import { run } from "../index";
 import { pathMarker } from "path-less-traveled";
 import { walk } from "bibarel";
+import { Path } from "clef-parse";
 
 export const rootDir = pathMarker(__dirname, "../..");
 
@@ -34,7 +35,9 @@ export async function doRun(
 
 export function clean<T>(value: T): T {
   return walk(value, (value) => {
-    if (typeof value === "string") {
+    if (value instanceof Path) {
+      return value.replace(rootDir(), "<rootDir>");
+    } else if (typeof value === "string") {
       return value
         .replaceAll(rootDir(), "<rootDir>")
         .replaceAll(
