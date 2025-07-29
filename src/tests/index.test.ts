@@ -9,6 +9,7 @@ import {
   requiredPath,
   requiredString,
 } from "../index";
+import * as clefairy from "../index";
 import { doRun, clean, DataBag } from "./test-helpers";
 
 test("basic success", async () => {
@@ -67,13 +68,13 @@ test("sync error throw", async () => {
         "printedErrors": [
           "Error: bad!!!
 
-    ./src/tests/index.test.ts:56:13        
-    54   |     {},
-    55   |     (options, ...args) => {
-    56 > |       throw new Error("bad!!!");
-    57   |     },
-    58   |     ["stuff", "yeah stuff"],
-    59   |   );
+    ./src/tests/index.test.ts:57:13        
+    55   |     {},
+    56   |     (options, ...args) => {
+    57 > |       throw new Error("bad!!!");
+    58   |     },
+    59   |     ["stuff", "yeah stuff"],
+    60   |   );
       at [stacktrace redacted]",
         ],
       },
@@ -101,13 +102,13 @@ test("async error throw", async () => {
         "printedErrors": [
           "Error: bad again!!!
 
-    ./src/tests/index.test.ts:90:13              
-    88   |     {},
-    89   |     async (options, ...args) => {
-    90 > |       throw new Error("bad again!!!");
-    91   |     },
-    92   |     ["stuff", "yeah stuff"],
-    93   |   );
+    ./src/tests/index.test.ts:91:13              
+    89   |     {},
+    90   |     async (options, ...args) => {
+    91 > |       throw new Error("bad again!!!");
+    92   |     },
+    93   |     ["stuff", "yeah stuff"],
+    94   |   );
       at [stacktrace redacted]",
         ],
       },
@@ -135,13 +136,13 @@ test("returns rejected promise", async () => {
         "printedErrors": [
           "Error: nahh
 
-    ./src/tests/index.test.ts:124:29                       
-    122   |     {},
-    123   |     (options, ...args) => {
-    124 > |       return Promise.reject(new Error("nahh"));
-    125   |     },
-    126   |     ["stuff", "yeah stuff"],
-    127   |   );
+    ./src/tests/index.test.ts:125:29                       
+    123   |     {},
+    124   |     (options, ...args) => {
+    125 > |       return Promise.reject(new Error("nahh"));
+    126   |     },
+    127   |     ["stuff", "yeah stuff"],
+    128   |   );
       at [stacktrace redacted]",
         ],
       },
@@ -309,6 +310,32 @@ test("errors when optional arg is wrong type", async () => {
       at [stacktrace redacted]",
         ],
       },
+    }
+  `);
+});
+
+test("exports", () => {
+  expect(
+    Object.fromEntries(
+      Object.entries(clefairy).map(([key, value]) => [key, typeof value]),
+    ),
+  ).toMatchInlineSnapshot(`
+    {
+      "ArgsObjectToOptions": "undefined",
+      "Path": "function",
+      "TypeSymbol": "undefined",
+      "TypeSymbolToType": "undefined",
+      "checkOptions": "function",
+      "getHints": "function",
+      "optionalBoolean": "symbol",
+      "optionalNumber": "symbol",
+      "optionalPath": "symbol",
+      "optionalString": "symbol",
+      "requiredBoolean": "symbol",
+      "requiredNumber": "symbol",
+      "requiredPath": "symbol",
+      "requiredString": "symbol",
+      "run": "function",
     }
   `);
 });

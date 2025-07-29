@@ -13,3 +13,4 @@ export {
 export { run, ArgsObjectToOptions } from "./run";
 export { checkOptions } from "./check-options";
 export { getHints } from "./get-hints";
+export { Path } from "clef-parse";
