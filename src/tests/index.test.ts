@@ -70,9 +70,9 @@ test("sync error throw", async () => {
     ./src/tests/index.test.ts:56:13        
     54   |     {},
     55   |     (options, ...args) => {
-    56 > |       throw new Error(\\"bad!!!\\");
+    56 > |       throw new Error("bad!!!");
     57   |     },
-    58   |     [\\"stuff\\", \\"yeah stuff\\"],
+    58   |     ["stuff", "yeah stuff"],
     59   |   );
       at [stacktrace redacted]",
         ],
@@ -104,9 +104,9 @@ test("async error throw", async () => {
     ./src/tests/index.test.ts:90:13              
     88   |     {},
     89   |     async (options, ...args) => {
-    90 > |       throw new Error(\\"bad again!!!\\");
+    90 > |       throw new Error("bad again!!!");
     91   |     },
-    92   |     [\\"stuff\\", \\"yeah stuff\\"],
+    92   |     ["stuff", "yeah stuff"],
     93   |   );
       at [stacktrace redacted]",
         ],
@@ -138,9 +138,9 @@ test("returns rejected promise", async () => {
     ./src/tests/index.test.ts:124:29                       
     122   |     {},
     123   |     (options, ...args) => {
-    124 > |       return Promise.reject(new Error(\\"nahh\\"));
+    124 > |       return Promise.reject(new Error("nahh"));
     125   |     },
-    126   |     [\\"stuff\\", \\"yeah stuff\\"],
+    126   |     ["stuff", "yeah stuff"],
     127   |   );
       at [stacktrace redacted]",
         ],
@@ -227,7 +227,7 @@ test("errors when args object has non-camelcase name", async () => {
         "error": [Error: All option keys must be in camelCase. This one wasn't: "SOME_THING"],
         "exitCode": 1,
         "printedErrors": [
-          "Error: All option keys must be in camelCase. This one wasn't: \\"SOME_THING\\"
+          "Error: All option keys must be in camelCase. This one wasn't: "SOME_THING"
 
     ./src/check-options.ts:17:13                                                   
     15   |   for (const key of Object.keys(schema)) {
@@ -269,7 +269,7 @@ test("errors when required arg isn't present", async () => {
     28   |     if (requiredSymbols.has(symbol) && value == null) {
     29 > |       throw new Error(
     30   |         \`'\${key}' is required, but it wasn't specified. Please specif...
-    31   |           key.length === 1 ? \\"-\\" + key : \\"--\\" + changeCase.paramCase(key)
+    31   |           key.length === 1 ? "-" + key : "--" + changeCase.paramCase(key)
     32   |         }.\`,
       at [stacktrace redacted]",
         ],

@@ -62,7 +62,7 @@ test("errors when args object has non-camelcase name", async () => {
 
   expect(() => {
     checkOptions(schema, result.options);
-  }).toThrowErrorMatchingInlineSnapshot('"All option keys must be in camelCase. This one wasn\'t: \\"SOME_THING\\""');
+  }).toThrowErrorMatchingInlineSnapshot(`[Error: All option keys must be in camelCase. This one wasn't: "SOME_THING"]`);
 });
 
 test("errors when required arg isn't present", async () => {
@@ -77,7 +77,7 @@ test("errors when required arg isn't present", async () => {
 
   expect(() => {
     checkOptions(schema, result.options);
-  }).toThrowErrorMatchingInlineSnapshot('"\'something\' is required, but it wasn\'t specified. Please specify it using --something."');
+  }).toThrowErrorMatchingInlineSnapshot(`[Error: 'something' is required, but it wasn't specified. Please specify it using --something.]`);
 });
 
 test("errors when required arg is wrong type", async () => {
@@ -92,7 +92,7 @@ test("errors when required arg is wrong type", async () => {
 
   expect(() => {
     checkOptions(schema, result.options);
-  }).toThrowErrorMatchingInlineSnapshot('"\'something\' has the wrong type: should have been \'requiredNumber\', but got: NaN"');
+  }).toThrowErrorMatchingInlineSnapshot(`[Error: 'something' has the wrong type: should have been 'requiredNumber', but got: NaN]`);
 });
 
 test("errors when optional arg is wrong type", async () => {
@@ -107,5 +107,5 @@ test("errors when optional arg is wrong type", async () => {
 
   expect(() => {
     checkOptions(schema, result.options);
-  }).toThrowErrorMatchingInlineSnapshot('"\'something\' has the wrong type: should have been \'optionalNumber\', but got: NaN"');
+  }).toThrowErrorMatchingInlineSnapshot(`[Error: 'something' has the wrong type: should have been 'optionalNumber', but got: NaN]`);
 });
